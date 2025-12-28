@@ -1,1 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flash cards for xxxxx</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .link {
+            color: #fff;
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            padding: 12px 24px;
+            border-radius: 25px;
+            display: inline-block;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .counter {
+            background: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            color: #667eea;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .shuffle-btn {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+
+        .shuffle-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .shuffle-btn:active {
+            transform: translateY(0);
+        }
+
+        .instructions {
+            background: rgba(255,255,255,0.9);
+            padding: 12px 24px;
+            border-radius: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        .instructions p {
+            color: #667eea;
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        .card-container {
+            perspective: 1000px;
+            width: 100%;
+            max-width: 500px;
+            height: 350px;
+            position: relative;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            cursor: pointer;
+        }
+
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: bold;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            user-select: none;
+        }
+
+        .card-front {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            color: #333;
+        }
+
+        .card-back {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            color: #333;
+            transform: rotateY(180deg);
+        }
+
+        .nav-area {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 30%;
+            z-index: 10;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .nav-area:hover {
+            opacity: 1;
+        }
+
+        .nav-left {
+            left: 0;
+            background: linear-gradient(to right, rgba(0,0,0,0.3), transparent);
+        }
+
+        .nav-right {
+            right: 0;
+            background: linear-gradient(to left, rgba(0,0,0,0.3), transparent);
+        }
+
+        .nav-arrow {
+            color: white;
+            font-size: 3rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .card-container {
+                height: 300px;
+            }
+
+            .card-face {
+                font-size: 2rem;
+            }
+
+            .controls {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .instructions p {
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Flash cards for xxxxx</h1>
+        <a href="https://srbee.github.io/expai/" class="link" target="_blank">Back to Main Page</a>
+    </div>
+
+    <div class="controls">
+        <div class="counter">
+            <span id="current">1</span> / <span id="total">3</span>
+        </div>
+        <button class="shuffle-btn" onclick="shuffle()">🔀 Shuffle</button>
+    </div>
+
+    <div class="instructions">
+        <p>📱 Tap the card to flip | Tap left edge for previous | Tap right edge for next</p>
+    </div>
+
+    <div class="card-container">
+        <div class="nav-area nav-left" onclick="prevCard(event)">
+            <div class="nav-arrow">‹</div>
+        </div>
+        <div class="card" id="card" onclick="flipCard(event)">
+            <div class="card-face card-front" id="front">A</div>
+            <div class="card-face card-back" id="back">1</div>
+        </div>
+        <div class="nav-area nav-right" onclick="nextCard(event)">
+            <div class="nav-arrow">›</div>
+        </div>
+    </div>
+
+    <script>
+        let cards = [
+            { front: 'A', back: '1' },
+            { front: 'B', back: '2' },
+            { front: 'C', back: '3' }
+        ];
+
+        let currentIndex = 0;
+        const cardEl = document.getElementById('card');
+        const frontEl = document.getElementById('front');
+        const backEl = document.getElementById('back');
+        const currentEl = document.getElementById('current');
+        const totalEl = document.getElementById('total');
+
+        function updateCard() {
+            cardEl.classList.remove('flipped');
+            frontEl.textContent = cards[currentIndex].front;
+            backEl.textContent = cards[currentIndex].back;
+            currentEl.textContent = currentIndex + 1;
+            totalEl.textContent = cards.length;
+        }
+
+        function flipCard(e) {
+            if (e.target.classList.contains('nav-area') || e.target.classList.contains('nav-arrow')) {
+                return;
+            }
+            cardEl.classList.toggle('flipped');
+        }
+
+        function nextCard(e) {
+            e.stopPropagation();
+            currentIndex = (currentIndex + 1) % cards.length;
+            updateCard();
+        }
+
+        function prevCard(e) {
+            e.stopPropagation();
+            currentIndex = (currentIndex - 1 + cards.length) % cards.length;
+            updateCard();
+        }
+
+        function shuffle() {
+            for (let i = cards.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [cards[i], cards[j]] = [cards[j], cards[i]];
+            }
+            currentIndex = 0;
+            updateCard();
+        }
+
+        updateCard();
+    </script>
+</body>
+</html>
